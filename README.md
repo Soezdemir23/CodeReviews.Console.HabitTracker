@@ -1,38 +1,59 @@
-# Habit logger
+# Habit Logger
 
-## Requirements:
+## Requirements
 
-- application to log occurences of a habit
-- can't be tracke by time, only quantity
-- Users need to be able to input the date of the occurence of the habit
-- The application should store and retrieve data from a real database
-- When the application starts, it should create a sqlite database, if one is not present.
--  it should also create a table in the database, where the habit will be logged
-- the users should be able to insert, delete, update and view the logged habit.
-- You should handle all possible errors so that the application never crashes.
-- You can only interact with the database using ADO.NET. You can't use mappers such as Entity Framework or Dapper.
-- Follow the DRY principle and avoid code repetition
-- Your project needs to containe Readme file where you'll explain how your app works and tell a little bit about your thought progress.
+- Build an application to log occurrences of a habit.
+- Habits cannot be tracked by time, only by quantity.
+- Users must be able to input the date of the habit occurrence.
+- The application must store and retrieve data from a real database.
+- When the application starts, it should create a SQLite database if one does not already exist.
+- It should also create a table in the database where habits are logged.
+- Users should be able to insert, delete, update, and view logged habits.
+- Handle possible errors so the application does not crash during normal use.
+- You can only interact with the database using ADO.NET. Do not use mappers such as Entity Framework or Dapper.
+- Follow the DRY principle and avoid code repetition.
+- The project must include a README file explaining how the app works and your thought process:
   - What was hard?
   - What was easy?
-  - Waht have you learned?
+  - What did you learn?
 
-## Tips:
+## Tips
 
-- Learn about the kiss principle and try to apply it to this project
-- Test the sql commands on the db browser before using them in the program.
-- improve user's experience when asking for a date input, give them the option to add today's date
-- You can keep all the code in a single class, but try to pivot towards oop if you can
-- Don't forget the user input's validation: Check for incorrect dates. What happens if a menu option is chosen that's not available? What happens if the users input a string instead of a number? 
+- Learn about the KISS principle and try to apply it to this project.
+- Test SQL commands in DB Browser before using them in the program.
+- Improve user experience when asking for a date input by giving the option to use today's date.
+- You can keep all code in a single class, but try to move toward OOP if possible.
+- Do not forget input validation:
+  - Check for incorrect dates.
+  - Handle invalid menu options.
+  - Handle cases where the user inputs a string instead of a number.
 
-## Challenges:
-- Get into the habit of unit tests, integration tests are for when you get used to writing unit tests.
-- if you haven't, get into trying to use parameterized queries to make application more secure
-- Let the users create their won habits to track. that will require that you let them choose the unit of ,easurement of each habit. Hot tip: You should not createaa a table for each habit.
-- Seed Data into the database automatically when the database gets created for the first time, generating a few habits and inserting a hundred records with randomly generated values. this is specially helpful during dev3elopment so you don't have to reinsert data every time you create the database
+## Challenges
 
-# Changing you working directory
+- Build the habit of writing unit tests. Integration tests can come later, after you are comfortable with unit tests.
+- If you have not already, use parameterized queries to improve security.
+- Let users create their own habits to track. This requires allowing them to choose the unit of measurement for each habit.
+  - Tip: do not create a separate table for each habit.
+- Seed data automatically when the database is created for the first time:
+  - Generate a few habits.
+  - Insert around 100 records with randomly generated values.
+  - This helps during development so you do not have to reinsert data each time.
 
-This way .NET will build your project in your main folder. By default it builds your project in a bin folder and just to keep things simple we want to avoid that. That will create a Properties folder with a launchsettings.json file containing your configuration information. This is an important step only for applications that use Sqlite because you want the database to be created in the same folder of the application to avoid confusion.
+## Changing Your Working Directory
 
-For that, click on the chevron next to the name of your app on the top menu, click on {nameoftheapp} Debug Properties and copy the path of your directory to the 'Working Directory' field. To find out what your path is, you can right click on your project in the Solution Explorer and on “Copy Full Path” or look it up in your Files Explorer. If you’re using Mac/Visual Studio Code, reach out and I’ll tell you how to do it.
+This setup makes .NET build your project in your main folder. By default, it builds into a `bin` folder. To keep things simple, this helps keep the SQLite database in a predictable place.
+
+This creates a `Properties` folder with a `launchSettings.json` file containing your configuration. This is especially important for SQLite apps, because you want the database file created in the same folder as the application to avoid confusion.
+
+To configure it:
+
+1. Click the chevron next to your app name in the top menu.
+2. Click `{nameoftheapp} Debug Properties`.
+3. Copy your project directory path into the **Working Directory** field.
+
+To get your project path, you can:
+
+- Right-click the project in Solution Explorer and choose **Copy Full Path**, or
+- Find it in your file explorer.
+
+If you are using Mac or Visual Studio Code, reach out and I can explain the equivalent setup.
