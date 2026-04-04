@@ -57,3 +57,27 @@ switch (choice)
 
 }
 
+void DeleteEntry()
+{
+    throw new NotImplementedException();
+}
+
+void EditEntry()
+{
+    throw new NotImplementedException();
+}
+
+void ViewEntries()
+{
+    throw new NotImplementedException();
+}
+
+void LogHabit()
+{
+    throw new NotImplementedException();
+}
+
+void AddHabit()
+{
+    throw new NotImplementedException();
+}
