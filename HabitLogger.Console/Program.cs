@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using Microsoft.Data.Sqlite;
+using Spectre.Console;
 
 var databasePath = Path.Join(Directory.GetCurrentDirectory(), "data");
 var databasePathWithDatabase = Path.Join(databasePath, "habitLogger.db");
@@ -28,4 +29,31 @@ var result = cmd.ExecuteScalar();
 System.Console.WriteLine();
 
 // Clear the Console and then Start the menu:
+Console.Clear();
+
+
+var choice = AnsiConsole.Prompt(
+    new SelectionPrompt<string>().Title("[bold green]Habit Logger[/]")
+    .AddChoices(new[]
+    {
+        "Add habit",
+        "Log habit entry (habit + date + quantity)",
+        "View entries (show habit name, date, day-of-week, quantity)",
+        "Edit entry",
+        "Delete entry",
+        "Exit"
+
+    })
+);
+
+switch (choice)
+{
+    case "Add habit": AddHabit(); break;
+    case "Log habit entry (habit + date + quantity)": LogHabit(); break;
+    case "View entries (show habit name, date, day-of-week, quantity)": ViewEntries(); break;
+    case "Edit entry": EditEntry(); break;
+    case "Delete entry": DeleteEntry(); break;
+    case "Exit": return;
+
+}
 
