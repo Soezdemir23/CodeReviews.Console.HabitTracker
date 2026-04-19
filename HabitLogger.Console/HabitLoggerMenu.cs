@@ -2,61 +2,79 @@ using Spectre.Console;
 
 namespace HabitLogger.HabitLoggerMenu;
 
+
+
+/// <summary>
+/// The UI the user deals with, it chooses an action and the method calls the other method in the habitloggerrepository. 
+/// </summary>
+
 public class HabitLoggerMenu
 {
 
 
     public HabitLoggerMenu()
     {
-        var choice = AnsiConsole.Prompt(
-    new SelectionPrompt<string>().Title("[bold green]Habit Logger[/]")
-    .AddChoices(new[]
+
+
+
+    }
+
+
+    public void MainMenu()
     {
-        "Add habit",
-        "Log habit entry (habit + date + quantity)",
-        "View entries (show habit name, date, day-of-week, quantity)",
-        "Edit entry",
-        "Delete entry",
-        "Exit"
-
-    })
-);
-
-        switch (choice)
+        while (true)
         {
-            case "Add habit": AddHabit(); break;
-            case "Log habit entry (habit + date + quantity)": LogHabit(); break;
-            case "View entries (show habit name, date, day-of-week, quantity)": ViewEntries(); break;
-            case "Edit entry": EditEntry(); break;
-            case "Delete entry": DeleteEntry(); break;
-            case "Exit": return;
 
+
+            var choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>().Title("[bold green]Habit Logger[/]")
+                .AddChoices(new[]
+                {
+                "Add habit",
+                "Log habit entry (habit + date + quantity)",
+                "View entries (show habit name, date, day-of-week, quantity)",
+                "Edit entry",
+                "Delete entry",
+                "Exit"
+
+                })
+            );
+
+            switch (choice)
+            {
+                case "Add habit": AddHabit(); break;
+                case "Log habit entry (habit + date + quantity)": LogHabit(); break;
+                case "View entries (show habit name, date, day-of-week, quantity)": ViewEntries(); break;
+                case "Edit entry": EditEntry(); break;
+                case "Delete entry": DeleteEntry(); break;
+                case "Exit": return;
+
+            }
         }
-
     }
 
-    void DeleteEntry()
+    public void DeleteEntry()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("This method has not been implemented yet (DeleteEntry).");
     }
 
-    void EditEntry()
+    public void EditEntry()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("This method has not been implemented yet (EditEntry).");
     }
 
-    void ViewEntries()
+    public void ViewEntries()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("This method has not been implemented yet (ViewEntries).");
     }
 
-    void LogHabit()
+    public void LogHabit()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("This method has not been implemented yet (LogHabit).");
     }
 
-    void AddHabit()
+    public void AddHabit()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("This method has not been implemented yet (AddHabit).");
     }
 }

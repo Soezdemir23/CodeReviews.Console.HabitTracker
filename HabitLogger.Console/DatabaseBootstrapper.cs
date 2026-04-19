@@ -9,7 +9,9 @@ public interface IConnectionFactory
     void CloseConnection(SqliteConnection connection);
 }
 
-
+/// <summary>
+/// Class that should create and manage the database actions and takes orders from the HabitLoggerRepository
+/// </summary>
 public class DatabaseBootstrapper : IConnectionFactory
 {
     private readonly string _connectionString;

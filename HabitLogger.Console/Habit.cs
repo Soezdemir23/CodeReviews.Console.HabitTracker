@@ -1,4 +1,4 @@
-namespace HabitLogger.HabitLogRepository;
+namespace HabitLogger.Habit;
 
 
 /// <summary>
@@ -10,9 +10,9 @@ namespace HabitLogger.HabitLogRepository;
 /// </summary>
 public class Habit
 {
-    public string habitName { get; private set; } = string.Empty;
+    public string HabitName { get; private set; } = string.Empty;
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-    public int habitQuantity { get; private set; }
+    public int HabitQuantity { get; private set; }
 }
