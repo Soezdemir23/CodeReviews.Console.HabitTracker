@@ -37,7 +37,7 @@ strap.OpenConnection();
 Console.WriteLine("written");
 
 // Clear the Console and then Start the menu:
-Console.Clear();
+
 
 
 // var choice = AnsiConsole.Prompt(
