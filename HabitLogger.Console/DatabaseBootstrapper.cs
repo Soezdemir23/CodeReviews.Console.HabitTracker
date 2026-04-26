@@ -37,4 +37,22 @@ public class DatabaseBootstrapper : IConnectionFactory
         connection.Open();
         return connection;
     }
+
+    public void InitDatabase()
+    {
+        using var connection = OpenConnection();
+        using var command = connection.CreateCommand();
+
+        command.CommandText = """
+            Create table if not exists Habits(
+                Id          Integer primary key autoincrement,
+                Name        Text not null check(length(Name) <=50),
+                CreatedAt   Text not null Default (datetime('now', 'localtime')),
+                Quantity    Integer not null check(Quantity >= 0)
+            );
+        """;
+
+        command.ExecuteNonQuery();
+
+    }
 }

@@ -1,3 +1,5 @@
+using HabitLogger.DatabaseBootstrapper;
+
 namespace HabitLogger.HabitRepository;
 
 /// <summary>
@@ -6,5 +8,23 @@ namespace HabitLogger.HabitRepository;
 /// </summary>
 public class HabitLoggerRepository
 {
+    private readonly IConnectionFactory _factory;
+
+    public HabitLoggerRepository(IConnectionFactory factory)
+    {
+        _factory = factory;
+    }
+
+
+    public void Addhabit(string habit)
+    {
+        var connection = _factory.OpenConnection();
+        var command = connection.CreateCommand();
+
+        command.CommandText = $"""
+        {habit}
+        
+        """;
+    }
 
 }

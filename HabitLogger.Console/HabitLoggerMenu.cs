@@ -1,3 +1,4 @@
+using HabitLogger.HabitRepository;
 using Spectre.Console;
 
 namespace HabitLogger.HabitLoggerMenu;
@@ -11,10 +12,10 @@ namespace HabitLogger.HabitLoggerMenu;
 public class HabitLoggerMenu
 {
 
-
-    public HabitLoggerMenu()
+    private readonly HabitLoggerRepository _repo;
+    public HabitLoggerMenu(HabitLoggerRepository repo)
     {
-
+        _repo = repo;
 
 
     }
@@ -53,27 +54,27 @@ public class HabitLoggerMenu
         }
     }
 
-    public void DeleteEntry()
+    private void DeleteEntry()
     {
         Console.WriteLine("This method has not been implemented yet (DeleteEntry).");
     }
 
-    public void EditEntry()
+    private void EditEntry()
     {
         Console.WriteLine("This method has not been implemented yet (EditEntry).");
     }
 
-    public void ViewEntries()
+    private void ViewEntries()
     {
         Console.WriteLine("This method has not been implemented yet (ViewEntries).");
     }
 
-    public void LogHabit()
+    private void LogHabit()
     {
         Console.WriteLine("This method has not been implemented yet (LogHabit).");
     }
 
-    public void AddHabit()
+    private void AddHabit()
     {
         Console.WriteLine("This method has not been implemented yet (AddHabit).");
     }

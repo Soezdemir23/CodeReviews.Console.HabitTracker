@@ -2,16 +2,22 @@
 
 using HabitLogger.DatabaseBootstrapper;
 using HabitLogger.HabitLoggerMenu;
+using HabitLogger.HabitRepository;
 
 
+// define the path where the database is.
 var databasePath = Path.Join(Directory.GetCurrentDirectory(), "data");
 var databasePathWithDatabase = Path.Join(databasePath, "habitLogger.db");
 
-// create the database or connect to it
+// instantiate the objects and integrate them in that order
 DatabaseBootstrapper strap = new(databaseFilePath: databasePathWithDatabase);
-strap.OpenConnection();
+HabitLoggerRepository repository = new HabitLoggerRepository(strap);
+HabitLoggerMenu loggerMenu = new HabitLoggerMenu(repository);
 
-//start the menu, keep it on a loop, probably inside the constructor
-HabitLoggerMenu menu = new();
-menu.MainMenu();
+//run the initialization of the database by adding the habits table if it doesn't exist:
+strap.InitDatabase();
+
+loggerMenu.MainMenu();
+
+
 

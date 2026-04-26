@@ -10,6 +10,7 @@ namespace HabitLogger.Habit;
 /// </summary>
 public class Habit
 {
+    public int HabitId { get; private set; }
     public string HabitName { get; private set; } = string.Empty;
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
