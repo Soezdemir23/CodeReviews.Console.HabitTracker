@@ -109,7 +109,7 @@ public class HabitLoggerRepository
 
         command.CommandText = $"""
             Select * from Habits
-            Where Id = {Id}
+            Where Id = {Id};
         
         """;
 
@@ -152,8 +152,10 @@ public class HabitLoggerRepository
                 Name = "{habit.HabitName}",
                 Quantity = {habit.HabitQuantity},
                 CreatedAt = {habit.CreatedAt}
-            Where Id = {habit.HabitId}
+            Where Id = {habit.HabitId};
         """;
+
+        command.ExecuteNonQuery();
     }
 
 }
