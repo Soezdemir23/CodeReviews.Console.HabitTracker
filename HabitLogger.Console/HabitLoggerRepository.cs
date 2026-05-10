@@ -20,32 +20,38 @@ public class HabitLoggerRepository
 
     public void Addhabit(string habitName, int habitQuantity, string habitDate)
     {
-        var connection = _factory.OpenConnection();
+        using var connection = _factory.OpenConnection();
         var command = connection.CreateCommand();
 
         command.CommandText = $"""
         Insert into Habits (Name, Quantity, CreatedAt)
         Values (
-            "{habitName}",
-            {habitQuantity},
-            {habitDate}
+            $name,
+            $quantity,
+            $createdAt
         );
         """;
+
+
+        command.Parameters.AddWithValue("$name", habitName);
+        command.Parameters.AddWithValue("$quantity", habitQuantity);
+        command.Parameters.AddWithValue("$createdAt", habitDate);
 
         command.ExecuteNonQuery();
     }
 
     public void RemoveHabit(int id)
     {
-        var connection = _factory.OpenConnection();
+        using var connection = _factory.OpenConnection();
         var command = connection.CreateCommand();
 
         command.CommandText = $"""
             Delete from Habits
-            Where Habits.Id = {id};
+            Where Habits.Id = $Id;
         
         """;
 
+        command.Parameters.AddWithValue("$Id", id);
         command.ExecuteNonQuery();
     }
 
@@ -55,7 +61,7 @@ public class HabitLoggerRepository
     /// </summary>
     public List<Habit> GetHabits()
     {
-        var connection = _factory.OpenConnection();
+        using var connection = _factory.OpenConnection();
         var command = connection.CreateCommand();
 
         command.CommandText = $"""
@@ -79,7 +85,7 @@ public class HabitLoggerRepository
                     HabitId = reader.GetInt32(idOrdinal),
                     HabitName = reader.GetString(nameOrdinal),
                     HabitQuantity = reader.GetInt32(quantityOrdinal),
-                    CreatedAt = DateTime.Parse(reader.GetString(quantityOrdinal))
+                    CreatedAt = DateTime.Parse(reader.GetString(createdAtOrdinal))
                 };
 
                 habits.Add(habit);
@@ -104,17 +110,23 @@ public class HabitLoggerRepository
 
     public Habit GetHabit(int Id)
     {
-        var connection = _factory.OpenConnection();
+        using var connection = _factory.OpenConnection();
         var command = connection.CreateCommand();
 
         command.CommandText = $"""
             Select * from Habits
-            Where Id = {Id};
+            Where Id = $Id;
         
         """;
 
+        command.Parameters.AddWithValue("$Id", Id);
+
         using var reader = command.ExecuteReader();
 
+        if (!reader.Read())
+        {
+            throw new InvalidOperationException($"No habit found with Id {Id}");
+        }
         var idOrdinal = reader.GetOrdinal("Id");
         var nameOrdinal = reader.GetOrdinal("Name");
         var quantityOrdinal = reader.GetOrdinal("Quantity");
@@ -127,7 +139,7 @@ public class HabitLoggerRepository
                 HabitId = reader.GetInt32(idOrdinal),
                 HabitName = reader.GetString(nameOrdinal),
                 HabitQuantity = reader.GetInt32(quantityOrdinal),
-                CreatedAt = DateTime.Parse(reader.GetString(quantityOrdinal))
+                CreatedAt = DateTime.Parse(reader.GetString(createdAtOrdinal))
             };
             return habit;
         }
@@ -142,19 +154,23 @@ public class HabitLoggerRepository
 
     public void UpdateHabit(Habit habit)
     {
-        var connection = _factory.OpenConnection();
+        using var connection = _factory.OpenConnection();
         var command = connection.CreateCommand();
 
 
         command.CommandText = $"""
             Update Habits
             Set 
-                Name = "{habit.HabitName}",
-                Quantity = {habit.HabitQuantity},
-                CreatedAt = {habit.CreatedAt}
-            Where Id = {habit.HabitId};
+                Name = $HabitName,
+                Quantity = $HabitQuantity,
+                CreatedAt = $HabitCreatedAt 
+        Where Id = $HabitId;
         """;
 
+        command.Parameters.AddWithValue("$HabitName", habit.HabitName);
+        command.Parameters.AddWithValue("$HabitQuantity", habit.HabitQuantity);
+        command.Parameters.AddWithValue("$HabitCreatedAt", habit.CreatedAt);
+        command.Parameters.AddWithValue("$HabitId", habit.HabitId);
         command.ExecuteNonQuery();
     }
 
