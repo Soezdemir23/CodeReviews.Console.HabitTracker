@@ -1,4 +1,5 @@
 using HabitLogger.HabitRepository;
+using HabitLogger.Models;
 using Spectre.Console;
 
 namespace HabitLogger.HabitLoggerMenu;
@@ -103,10 +104,29 @@ public class HabitLoggerMenu
     /// </summary>
     private void OpenTable()
     {
+        var choice = AnsiConsole.Prompt(
+                     new SelectionPrompt<string>().Title("[bold green]Habits[/]")
+                     .AddChoices(new[]
+                     {
+                    "Add new Habit",
+                    "Modify Habit",
+                    "Return to main menu"
+                     })
+                 );
 
+
+        switch (choice)
+        {
+            case "Add new Habit": AddHabit(); break;
+            case "Modify Habit": ModifyHabits(); break;
+            default: return;
+        }
     }
 
-
+    private void ModifyHabits()
+    {
+        throw new NotImplementedException();
+    }
 
     public void PopulateWithFakeHabits()
     {
@@ -144,6 +164,62 @@ public class HabitLoggerMenu
     /// <exception cref="NotImplementedException"></exception>
     private void AddHabit()
     {
-        throw new NotImplementedException();
+
+
+        var name = AnsiConsole.Ask<String>("What habit will you log today?");
+
+        var quantity = AnsiConsole.Prompt(
+            new TextPrompt<int>("How many times did you do the habit at that day?")
+                // This and the other Validate chain are great candidates for a unit test
+                .Validate(q => HabitInputValidator.IsValidQuantity(q)
+                    ? ValidationResult.Success()
+                    : ValidationResult.Error("[red]The number of habits on that day must be greater than 0 or smaller than 9999.[/]")
+                )
+        );
+
+        var dateChoice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+            .Title("When did you do this habit?")
+            .AddChoices("Today", "Enter a custom date")
+        );
+
+        DateTime date;
+
+        if (dateChoice == "Today")
+        {
+            date = DateTime.Now;
+        }
+        else
+        {
+            var dateText = AnsiConsole.Prompt(
+                new TextPrompt<string>("Enter date [grey](yyyy-MM-dd)[/]:")
+                // this is also a no brainer candidate for a unit test
+                .Validate(d => HabitInputValidator.TryParseHabitDate(
+                    d, out _)
+                        ? ValidationResult.Success()
+                        : ValidationResult.Error("[red]Invalid date format. Use yyyy-MM-dd.[/]"))
+            );
+            // This block is also a unit testing candidate maybe?
+            DateTime.TryParseExact(dateText, "yyyy-MM-dd",
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None, out date);
+        }
+
+        AnsiConsole.MarkupLine($"\nHabit: [cyan]{name}[/] | Quantity: [cyan]{quantity}[/] | Date: [cyan]{date:yyyy-MM-dd}");
+
+        var confirmed = AnsiConsole.Confirm("Save this habit?");
+
+        if (!confirmed)
+        {
+            AnsiConsole.MarkupLine("[yellow]Habit not saved.[/]");
+            return;
+        }
+
+        _repo.Addhabit(name, quantity, date.ToString("yyyy-MM-dd HH:mm:ss"));
+        AnsiConsole.MarkupLine("[green]Habit saved successfully");
+
+
+
+
     }
 }
