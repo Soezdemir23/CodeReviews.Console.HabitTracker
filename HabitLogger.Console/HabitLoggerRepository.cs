@@ -55,6 +55,19 @@ public class HabitLoggerRepository
         command.ExecuteNonQuery();
     }
 
+    public int RemoveAllHabitEntries()
+    {
+        using var connection = _factory.OpenConnection();
+        var command = connection.CreateCommand();
+
+        command.CommandText = """
+        DELETE FROM Habits;
+        """;
+
+
+        return command.ExecuteNonQuery();
+
+    }
 
     /// <summary>
     /// Should return a list of habits, all habits
