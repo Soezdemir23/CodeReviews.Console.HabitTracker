@@ -139,7 +139,7 @@ public class HabitLoggerMenu
     /// Access all the habits from the repository as a
     /// </summary>
     /// <exception cref="NotImplementedException"></exception>
-    private void GetAllHabitEntries()
+    private List<Habit> GetAllHabitEntries()
     {
         throw new NotImplementedException();
     }
@@ -151,7 +151,27 @@ public class HabitLoggerMenu
     /// <exception cref="NotImplementedException"></exception>
     private void DeleteAllHabitEntries()
     {
-        throw new NotImplementedException();
+        // first get all the entries, so I can ask the user if they really want to delete N rows.
+
+
+        var choices = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+        .Title($"Do you really want to remove every habit in the database?")
+        .AddChoices("Yes", "No")
+        );
+
+        if (choices.Equals("Yes"))
+        {
+            AnsiConsole.MarkupLine("Deleting the database content...");
+            int numberOfRows = _repo.RemoveAllHabitEntries();
+            AnsiConsole.MarkupLine($"The {numberOfRows} were deleted.");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine("Returning back to previous menu");
+        }
+
+
     }
 
 
