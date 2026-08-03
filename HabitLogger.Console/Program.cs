@@ -6,8 +6,13 @@ using HabitLogger.HabitRepository;
 
 
 // define the path where the database is.
-var databasePath = Path.Join(Directory.GetCurrentDirectory(), "data");
-var databasePathWithDatabase = Path.Join(databasePath, "habitLogger.db");
+// BUG: Opening the project in another folder gives a different path.
+// Solved:  Use AppContext.BaseDirectory, which moves the database into the app's actual runtime folder permanently.
+//          Also Make sure the data folder exists before sqlite tries to open the db.
+var appDirectory = AppContext.BaseDirectory;
+var databasePath = Path.Combine(appDirectory, "data");
+Directory.CreateDirectory(databasePath);
+var databasePathWithDatabase = Path.Combine(databasePath, "habitLogger.db");
 
 // instantiate the objects and integrate them in that order
 DatabaseBootstrapper strap = new(databaseFilePath: databasePathWithDatabase);
