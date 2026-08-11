@@ -149,155 +149,13 @@ public class HabitLoggerMenu
 
     private void ModifyHabits()
     {
-        var habits = _repo.GetHabits();
-        int totalPages = habits.Count / 10; // ten entries per page, what about pages that have less than ten entries? modulo
-        int currentPage = 1; // lists are zero count based, except when counted
 
+        var habits = _repo.GetHabits();
         string keywords = String.Empty;
 
         var table = new Table().BorderColor(Color.Gold3).Title("[magenta]Your logged habits[/]");
 
-        // Columns:
-        table.AddColumn("Habit id");
-        table.AddColumn("Habit name");
-        table.AddColumn("Habit quantity");
-        table.AddColumn("Habit date");
-
-        // rows, should be ten entries per page (later).
-        foreach (var habit in habits)
-        {
-            table.AddRow(
-                habit.HabitId.ToString(),
-                habit.HabitName,
-                habit.HabitQuantity.ToString(),
-                habit.CreatedAt.ToString()
-            );
-        }
-
-        table.ShowFooters();
-
-        AnsiConsole.Write(table);
-
-        while (true)
-        {
-            var choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("[bold green]Actions[/]")
-                    .AddChoices(
-                        new[]
-                        {
-                            "next page",
-                            "previous page",
-                            //        "search",
-                            //      "select by id",
-                            "back",
-                        }
-                    )
-            );
-            switch (choice)
-            {
-                case "next page":
-                    RenderNextPage();
-                    break;
-                case "previous page":
-                    RenderPreviousPage();
-                    break;
-                //case "search": FilterByHabits(); break;
-                //case "select by id": SelectById(); break;
-                default:
-                    return;
-            }
-
-            // three ways this can go for next page:
-            // - next page doesn't exist, the entries aren't enough to support pagionation at the moment
-            // - the user wants to try to go further than the totalPages
-            // - the user just wants the next available page
-            // - edge case: there are entries that can only be seen via modulo
-
-            //there are more pages than totalPages
-            if (totalPages > currentPage)
-            {
-                //first increment the page
-                currentPage += 1;
-                //then calculate where the next table starts
-                int startingCount = currentPage * 10;
-
-                table = new Table()
-                    .BorderColor(Color.Gold3)
-                    .Title("[magenta]Your logged habits[/]");
-
-                // Columns:
-                table.AddColumn("Habit id");
-                table.AddColumn("Habit name");
-                table.AddColumn("Habit quantity");
-                table.AddColumn("Habit date");
-
-                //now get the next list of entries
-                //
-                for (var i = startingCount; i < startingCount + 10; i++)
-                {
-                    var habit = habits.ElementAt(i);
-                    table.AddRow(
-                        habit.HabitId.ToString(),
-                        habit.HabitName,
-                        habit.HabitQuantity.ToString(),
-                        habit.CreatedAt.ToString()
-                    );
-                }
-            }
-            else if (totalPages % 10 > 0) // always the last page or the very first one
-            {
-                //first of all, get the number by modulo
-                int rest = totalPages % 10;
-                // then get the count like this, zero-count! don't forget
-                int startingPoint = habits.Count - rest + 1;
-
-                table = new Table()
-                    .BorderColor(Color.Gold3)
-                    .Title("[magenta]Your logged habits[/]");
-
-                // Columns:
-                table.AddColumn("Habit id");
-                table.AddColumn("Habit name");
-                table.AddColumn("Habit quantity");
-                table.AddColumn("Habit date");
-
-                //now get the next list of entries
-                //
-                for (var i = startingPoint; i < habits.Count; i++)
-                {
-                    var habit = habits.ElementAt(i);
-                    table.AddRow(
-                        habit.HabitId.ToString(),
-                        habit.HabitName,
-                        habit.HabitQuantity.ToString(),
-                        habit.CreatedAt.ToString()
-                    );
-                }
-            }
-            else
-            {
-                AnsiConsole.Write("[red]There is no page after this.[/]");
-            }
-
-            //then there is the previous page, which is probably the reverse:
-            // - the user can't browse below 1, or in zero count base, below zero... subzero pffft...
-            // - of course, what happens if the user is on the first page and not enough entries are there to fill page? nothing
-            // - I wonder if there are any other edge cases like in the next page, aside from going subzero....
-
-            if (currentPage < 1)
-            {
-                AnsiConsole.Write(
-                    "[red]You can't go to zero pages or below. If you want subzero go play mortal kombat"
-                );
-            }
-            else
-            {
-                table = new Table()
-                    .BorderColor(Color.Gold3)
-                    .Title("[magenta]Your logged habits[/]");
-
-                // Columns:
+        /*         // Columns:
                 table.AddColumn("Habit id");
                 table.AddColumn("Habit name");
                 table.AddColumn("Habit quantity");
@@ -313,18 +171,232 @@ public class HabitLoggerMenu
                         habit.CreatedAt.ToString()
                     );
                 }
+         */
+        table.ShowFooters();
+
+        AnsiConsole.Write(table);
+
+        //Below this line we are implementing code that needs to be refactored later 
+        //#first:Reduce the table to ten entries for now. implement number of pages.
+        //Then implement navigation.
+
+        int currentPage = 0; // in string when shown, it needs to be shown as 1 at start;
+        // get the correct number of pages after dividing by ten entries
+        int maxPages = habits.Count % 10 != 0 ? habits.Count / 10 + 1 : habits.Count / 10;
+
+        while (true)
+        {
+            Console.WriteLine($"Page: {currentPage}\nmaxPages: {maxPages}");
+            // takes the habits list, current page, the maximum pages, renders it here
+            // curentPage can change, but we have a problem with the rest.
+            var currentPageEntries = RenderPage(habits, currentPage, maxPages).ToList();
+
+            //prompt the user to select next page, previous page, exit
+            //Aw sheeeeit, pagination kinda works. get the currentPageEntries, ask the user which Habit it wants changed (by number),
+            //get the id, modify the habit, push it into the database.
+            //should work, right?
+            if (currentPage == 0)//first page, no previous page
+            {
+                var action = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                    .Title("[green] Choose your next actions DEBUG:1.[/]")
+                    .AddChoices(
+                        "Next page",
+                        "Modify Habit (by row in page)",
+                        "Return to previous menu")
+                );
+
+                switch (action)
+                {
+                    case "Next page":
+                        currentPage++;
+                        break;
+                    case "Modify Habit (by row in page)":
+                        ModifyHabitByRowInPage(currentPageEntries, habits);
+                        break;
+                    default:
+                        return;
+                }
+            }
+            else if (currentPage == maxPages)
+            {
+                var action = AnsiConsole.Prompt(
+                   new SelectionPrompt<string>()
+                   .Title("[green] Choose your next actions DEBUG: 2.[/]")
+                   .AddChoices(
+                       "Previous page",
+                       "Modify Habit (by row in page)",
+                       "return to menu")
+               );
+
+                switch (action)
+                {
+                    case "Previous page":
+                        currentPage--;
+                        break;
+
+                    case "Modify Habit (by row in page)":
+                        ModifyHabitByRowInPage(currentPageEntries, habits);
+                        break;
+                    default:
+                        return;
+                }
+            }
+            else
+            {
+                var action = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                    .Title("[green] Choose your next actions DEBUG: 3.[/]")
+                    .AddChoices(
+                        "Next page",
+                        "Previous page",
+                        "Modify Habit (by row in page)",
+                        "return to menu")
+                );
+
+                switch (action)
+                {
+                    case "Next page":
+                        currentPage++;
+                        break;
+                    case "Previous page":
+                        currentPage--;
+                        break;
+                    case "Modify Habit (by row in page)":
+                        ModifyHabitByRowInPage(currentPageEntries, habits);
+                        break;
+                    default:
+                        return;
+                }
             }
         }
     }
 
-    private void RenderPreviousPage()
+
+    /// <summary>
+    /// modifies rows in page.Takes ID in currentPageEntries and updates the database with the new habit changes.
+    /// Then also updates the habits list. This way we do not have to refetch all habits from the database every single time.
+    /// </summary>
+    /// <param name="currentPageEntries"></param>
+    /// <param name="habits"></param>
+    /// <exception cref="NotImplementedException"></exception>
+    private void ModifyHabitByRowInPage(List<Habit> currentPageEntries, List<Habit> habits)
     {
-        throw new NotImplementedException();
+        //prompt the user for which row it wants to change
+        var row = AnsiConsole.Prompt(
+            new TextPrompt<int>($"Pick row to modify (1-{currentPageEntries.Count}):")
+            .Validate(n =>
+                n >= 1 && n <= currentPageEntries.Count
+                ? ValidationResult.Success()
+                : ValidationResult.Error("[red]Row out of range.[/]")
+                )
+        );
+
+        var selectedHabit = currentPageEntries[row - 1];
+
+        var option = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+            .Title("[bold green]Which parts of the habit do you want to change?[/]")
+            .AddChoices<string>(
+                "Name", "Quantity", "Date", "Cancel"
+            )
+        );
+
+        // Handle chose option
+        switch (option)
+        {
+            case "Name":
+                string newHabitName = AnsiConsole.Ask<string>("[gold3]What is the new habit for this entry? [/]");
+                selectedHabit.HabitName = newHabitName;
+                break;
+            case "Quantity":
+                int newHabitQuantity = AnsiConsole.Ask<int>("[gold3]What is the new quantity for this behavior?[/]");
+                selectedHabit.HabitQuantity = newHabitQuantity;
+                break;
+            case "Date":
+                var dateText = AnsiConsole.Prompt(
+                    new TextPrompt<string>("Enter date [gold3](yyyy-MM-dd)[/]")
+                    .Validate(d => HabitInputValidator.TryParseHabitDate(d, out _)
+                    ? ValidationResult.Success()
+                    : ValidationResult.Error("[red]Invalid date format. Use yyyy-MM-dd.[/]"))
+                );
+
+                if (DateTime.TryParseExact(
+                    dateText,
+                    "yyyy-MM-dd",
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None,
+                    out var parsedDate
+                ))
+                {
+                    AnsiConsole.MarkupLine("[red]Could not parse the date.(/])");
+                    break;
+                }
+
+                selectedHabit.CreatedAt = parsedDate;
+                break;
+            case "Cancel":
+            default:
+                return;
+        }
+
+        // Confirm things
+        var confirmation = AnsiConsole.Confirm($"Does this look good to you?\nHabitname:{selectedHabit.HabitName}\nHabit quantity:{selectedHabit.HabitQuantity}\nHabit date:{selectedHabit.CreatedAt.ToString("yyyy-MM-dd")}");
+
+        if (!confirmation)
+        {
+            AnsiConsole.MarkupLine("[yellow]Update Cancelled[/]");
+            return;
+        }
+
+        _repo.UpdateHabit(selectedHabit);
+        AnsiConsole.MarkupLine("[green]Behavior has been changed.[/]");
     }
 
-    private void RenderNextPage()
+
+
+
+    /// <summary>
+    /// Renders the table with pagination.
+    /// </summary>
+    /// <param name="habits"></param>
+    /// <param name="currentPage"></param>
+    /// <param name="maxPages"></param>
+    /// 
+    private IEnumerable<Habit> RenderPage(List<Habit> habits, int currentPage, double maxPages)
     {
-        throw new NotImplementedException();
+        var table = new Table().BorderColor(Color.Gold3).Title("[magenta]Your logged habits[/]");
+
+        // Columns:
+        table.AddColumn("Habit number");
+        table.AddColumn("Habit name");
+        table.AddColumn("Habit quantity");
+        table.AddColumn("Habit date");
+
+
+        // calculate which entries are required to be rendered at the moment:
+        // let's say we have 777 entries and max 10 entries:
+        // 77.7 pages it returns, so 78.
+        // if it's not the last page, we can assume it is always a page of 10 entries.
+        // we should isolate them as a list and then simply render them below
+
+        var currentPageEntries = habits.Skip(currentPage * 10).Take(10);
+        var entryNumber = 0;
+        foreach (var habit in currentPageEntries)
+        {
+            entryNumber++;
+            table.AddRow(
+            entryNumber.ToString(),
+            habit.HabitName,
+            habit.HabitQuantity.ToString(),
+            habit.CreatedAt.ToString()
+            );
+
+        }
+        AnsiConsole.Write(table);
+        AnsiConsole.MarkupLine($"Page {currentPage} of {maxPages}"); //nice debugging and information for users
+
+        return currentPageEntries;
     }
 
     /// <summary>
