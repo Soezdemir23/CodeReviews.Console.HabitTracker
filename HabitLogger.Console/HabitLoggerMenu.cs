@@ -329,7 +329,7 @@ public class HabitLoggerMenu
                     out var parsedDate
                 ))
                 {
-                    AnsiConsole.MarkupLine("[red]Could not parse the date.(/])");
+                    AnsiConsole.MarkupLine("[red]Could not parse the date.([/])");
                     break;
                 }
 
